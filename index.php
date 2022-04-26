@@ -4,11 +4,11 @@ require_once "router.php";
 
 $router = new Router();
 $router->add("/", "GET", function () {
-	echo "<h1>Hello!</h1>";
+	require_once "views/login.html";
 });
 
-$router->add("/world", "GET", function () {
-	echo "<h1>Hello, world!</h1>";
+$router->add("/employees", "GET", function () {
+	require_once "views/employees.html";
 });
 
 $router->run($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
