@@ -21,15 +21,69 @@ function getEditData(el) {
 	document.getElementById("editID").value = id;
 }
 
-function deleteEmployee(el){
+function submitDelete(el){
 	if(!confirm("Delete this employee?")){
 		return;
 	}
 
+	el.closest(".card").id = "toBeDeleted";
 	var employeeData = getEmployeeData(el);
 	var id = findCardInputValue(employeeData, "employeeID");
+	var data = {};
+	data["id"] = id;
 
-	// Send to PHP and wait for response
-	//
-	// report success/failure
+	makeRequest("/employees", "DELETE", checkDeleteOk, data);
+}
+
+function checkDeleteOk(response) {
+	if (response == "true") {
+		removeAlert();
+		myAlert = createAlert("Employee Deleted","success");
+		document.getElementById("alertBox").appendChild(myAlert);
+		document.getElementById("toBeDeleted").remove();
+		// Move cards over
+	} else {
+		alert(response);
+	}
+}
+
+function submitAddOrEdit(e, method){
+	e.preventDefault();
+
+	var prefix = "";
+	if (method == "POST") {
+		prefix = "add";
+	} else {
+		prefix = "edit";
+	}
+
+	var data = {};
+	var nameInput = document.getElementById(prefix + "Name");
+	var titleInput = document.getElementById(prefix + "Title");
+	var hiredInput = document.getElementById(prefix + "Hired");
+	data[nameInput.name] = nameInput.value;
+	data[titleInput.name] = titleInput.value;
+	data[hiredInput.name] = hiredInput.value;
+
+	makeRequest("/employees", method.toUpperCase(), checkAddOrEditOk, data);
+}
+
+function checkAddOrEditOk(response, method) {
+	if (response == "true") {
+		var message = "";
+		if (method == "POST") {
+			message = "Added";
+			// Add card
+		} else {
+			message = "Updated";
+			// Update card
+		}
+
+		removeAlert();
+		myAlert = createAlert("Employee " + message,"success");
+		document.getElementById("alertBox").appendChild(myAlert);
+	} else {
+		alert(response);
+	}
+	Array.from(document.getElementsByClassName("close-modal")).forEach(element => element.click());
 }
