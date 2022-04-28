@@ -10,13 +10,13 @@ class Router {
 		);
 	}
 
-	function run($raw_path, $method) {
+	function run($raw_path, $method, $db) {
 		$path = parse_url($raw_path)["path"];
 		$method = strtoupper($method);
 
 		foreach ($this->routes as $index => $value) {
 			if ($value["path"] == $path && $value["method"] == $method) {
-				call_user_func($value["callback"]);
+				call_user_func_array($value["callback"], array($db));
 				return;
 			}
 		}

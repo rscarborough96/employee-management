@@ -1,11 +1,9 @@
 <?php
-declare(strict_types=1);
-
 class User {
 	private $username;	
 	private $password;	
 	
-	public function __construct(String $username, String $password) {
+	public function __construct($username, $password) {
 		$this->username = $username;
 		$this->password = $password;
 	}
@@ -20,7 +18,7 @@ class User {
 	public function getPassword() {
 		return $this->password;
 	}
-	public function setPassword(Integer $password) {
+	public function setPassword(String $password) {
 		$this->password = $password;
 	}
 }

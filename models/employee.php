@@ -1,13 +1,11 @@
 <?php
-declare(strict_types=1);
-
 class Employee {
 	private $id;	
 	private $name;	
 	private $title;	
 	private $hiredDate;	
 	
-	public function __construct(Integer $id, String $name, String $title, DateTime $hiredDate) {
+	public function __construct($id, $name, $title, $hiredDate) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->title = $title;
@@ -17,28 +15,28 @@ class Employee {
 	public function getId() {
 		return $this->id;
 	}
-	public function setId(Integer $id) {
+	public function setId($id) {
 		$this->id = $id;
 	}
 
 	public function getName() {
 		return $this->name;
 	}
-	public function setName(String $name) {
+	public function setName($name) {
 		$this->name = $name;
 	}
 
 	public function getTitle() {
 		return $this->title;
 	}
-	public function setTitle(Integer $title) {
+	public function setTitle($title) {
 		$this->title = $title;
 	}
 
 	public function getHiredDate() {
 		return $this->hiredDate;
 	}
-	public function setHiredDate(DateTime $id) {
+	public function setHiredDate($id) {
 		$this->hiredDate = $hiredDate->format("Y-m-d");
 	}
 

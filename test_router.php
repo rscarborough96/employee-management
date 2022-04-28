@@ -43,23 +43,23 @@ class Test_Router {
 			$_ENV["num"] = 3;
 		});
 
-		$this->router->run("/one","GET");
+		$this->router->run("/one","GET", null);
 		if ($_ENV["num"] != 1) {
 			exit("The correct callback did not run - /one, GET\n");
 		}
-		$this->router->run("/two","GET");
+		$this->router->run("/two","GET", null);
 		if ($_ENV["num"] != 2) {
 			exit("The correct callback did not run - /two, GET\n");
 		}
-		$this->router->run("/one","POST");
+		$this->router->run("/one","POST", null);
 		if ($_ENV["num"] != 1) {
 			exit("The correct callback did not run - /one, POST\n");
 		}
-		$this->router->run("/two","POST");
+		$this->router->run("/two","POST", null);
 		if ($_ENV["num"] != 2) {
 			exit("The correct callback did not run - /two, POST\n");
 		}
-		$this->router->run("/th/ree","GET");
+		$this->router->run("/th/ree","GET", null);
 		if ($_ENV["num"] != 3) {
 			exit("The correct callback did not run - /th/ree, GET\n");
 		}

@@ -20,7 +20,7 @@ function submitLogin(e) {
 
 function checkResponseOk(response) {
 	if (response == "true") {
-		document.getElementById("form").submit();
+		window.location.replace("/employees");
 	} else {
 		failedLogin();
 	}
