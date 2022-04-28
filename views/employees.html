@@ -33,7 +33,7 @@
 						<button class="close-modal btn btn-outline-danger btn-close m-1" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
-						<form onsubmit="submitAddOrEdit(event, 'POST');">
+						<form onsubmit="submitAddOrEdit(event, 'add');">
 							
 							<div class="form-group py-2 px-3">
 								<label for="name">Name:</label>
@@ -66,7 +66,7 @@
 						<button class="close-modal btn btn-outline-danger btn-close m-1" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">
-						<form onsubmit="submitAddOrEdit(event, 'PUT');">
+						<form onsubmit="submitAddOrEdit(event, 'edit');">
 							<input id="editID" type="hidden" name="editID" value="">
 							<div class="form-group py-2 px-3">
 								<label for="editName">Name:</label>

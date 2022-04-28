@@ -33,9 +33,8 @@ $router->add("/employees/data", "GET", function () {
 	echo json_encode($data);
 });
 
-$router->add("/employees", "POST", function () {
+$router->add("/employees/add", "POST", function () {
 	$data = array(
-		"success" => "true",
 		"id" => "1"
 	);
 	echo json_encode($data);
@@ -46,11 +45,8 @@ $router->add("/employees", "POST", function () {
 	//	echo $error
 });
 
-$router->add("/employees", "PUT", function () {
-	$data = array(
-		"success" => "true"
-	);
-	echo json_encode($data);
+$router->add("/employees/update", "POST", function () {
+	echo "true";
 	// Check Credentials
 	// if update to db works
 	//	echo "true";
@@ -58,7 +54,7 @@ $router->add("/employees", "PUT", function () {
 	//	echo $error
 });
 
-$router->add("/employees", "DELETE", function () {
+$router->add("/employees/delete", "POST", function () {
 	echo "true";
 	// Check Credentials
 	// if delete from db works

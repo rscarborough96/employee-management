@@ -37,7 +37,7 @@ function submitDelete(el){
 	var data = {};
 	data["id"] = id;
 
-	makeRequest("/employees", "DELETE", checkDeleteOk, data);
+	makeRequest("/employees/delete", "POST", checkDeleteOk, data);
 }
 
 function checkDeleteOk(response) {
@@ -53,18 +53,14 @@ function checkDeleteOk(response) {
 
 function getModalData(method) {
 	var data = {};
-	var prefix = "";
-	if (method == "POST") {
-		prefix = "add";
-	} else {
-		prefix = "edit";
+	if (method == "edit") {
 		var idInput = document.getElementById("editID");
 		data[idInput.name] = idInput.value;
 	}
 
-	var nameInput = document.getElementById(prefix + "Name");
-	var titleInput = document.getElementById(prefix + "Title");
-	var hiredInput = document.getElementById(prefix + "Hired");
+	var nameInput = document.getElementById(method + "Name");
+	var titleInput = document.getElementById(method + "Title");
+	var hiredInput = document.getElementById(method + "Hired");
 	data[nameInput.name] = nameInput.value;
 	data[titleInput.name] = titleInput.value;
 	data[hiredInput.name] = hiredInput.value;
@@ -75,36 +71,46 @@ function getModalData(method) {
 function submitAddOrEdit(e, method){
 	e.preventDefault();
 	var data = getModalData(method);
-	makeRequest("/employees", method.toUpperCase(), handleAddOrEdit, data);
+	if (method == "add") {
+		makeRequest("/employees/add", "POST", handleAdd, data);
+	} else {
+		makeRequest("employees/update", "POST", handleEdit, data);
+	}
 }
 
-function handleAddOrEdit(json, method) {
-	var responseData = JSON.parse(json);
-	if (responseData["success"] == "true") {
-		var data = getModalData(method);
-		var message = "";
-		if (method == "POST") {
-			message = "Added";
-			data["id"] = responseData["id"];
-			var newCardColumn = createCardColumn(data);
-			insertCardColumn(newCardColumn);
-		} else {
-			message = "Updated";
-			var card = document.getElementById("toBeEdited");
-			card.querySelector(".card-header").innerHTML = data["name"];
-			card.querySelector(".title").innerHTML = "Title: <strong>" + data["title"] + "</strong>";
-			card.querySelector(".date-hired").innerHTML = "Hired Date: <strong>" + data["hired"] + "</strong>";
-
-			var employeeData = getEmployeeData(card);
-			findCardInput(employeeData, "name").value = data["name"];
-			findCardInput(employeeData, "title").value = data["title"];
-			findCardInput(employeeData, "hired").value = data["hired"];
-
-			card.removeAttribute("id");
-		}
+function handleAdd(json) {
+	if (json != null) {
+		var responseData = JSON.parse(json);
+		var data = getModalData("add");
+		data["id"] = responseData["id"];
+		var newCardColumn = createCardColumn(data);
+		insertCardColumn(newCardColumn);
 
 		removeAlert();
-		myAlert = createAlert("Employee " + message,"success");
+		myAlert = createAlert("Employee Added", "success");
+		document.getElementById("alertBox").appendChild(myAlert);
+	} else {
+		alert("Something went wrong");
+	}
+	Array.from(document.getElementsByClassName("close-modal")).forEach(element => element.click());
+}
+
+function handleEdit(response) {
+	if (response == "true") {
+		var data = getModalData("edit");
+		var card = document.getElementById("toBeEdited");
+		var employeeData = getEmployeeData(card);
+
+		card.querySelector(".card-header").innerHTML = data["name"];
+		card.querySelector(".title").innerHTML = "Title: <strong>" + data["title"] + "</strong>";
+		card.querySelector(".date-hired").innerHTML = "Hired Date: <strong>" + data["hired"] + "</strong>";
+		findCardInput(employeeData, "name").value = data["name"];
+		findCardInput(employeeData, "title").value = data["title"];
+		findCardInput(employeeData, "hired").value = data["hired"];
+		card.removeAttribute("id");
+
+		removeAlert();
+		myAlert = createAlert("Employee Updated", "success");
 		document.getElementById("alertBox").appendChild(myAlert);
 	} else {
 		alert("Something went wrong");
@@ -145,7 +151,6 @@ function handleGetEmployees(json) {
 		// Sort by name in REVERSE alphabetical order.
 		// This is because the first column added will end up at the bottom of the page.
 		responseData = responseData.sort((a, b) => a["name"] > b["name"] ? -1 : 1);
-		console.log(responseData);
 		responseData.forEach(employee => insertCardColumn(createCardColumn(employee)));
 	} else {
 		alert("Something went wrong");
