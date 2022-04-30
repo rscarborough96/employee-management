@@ -19,32 +19,52 @@ $router->add("/", "POST", function ($db) {
 	$password = $_POST["password"];
 	$user = new User($username, $password);
 
-	if ($db->checkUserCredentials($user)) {
-		$_SESSION["username"] = $user->getUsername();
-		echo "true";
-	} else {
-		echo "false";
+	$user = $db->checkUserCredentials($user);
+	if ($user) {
+		if ($user->getUsername()) {
+			$_SESSION["username"] = $user->getUsername();
+			echo "true";
+		} else {
+			echo "not_a_user";
+		}
 	}
 });
 
 $router->add("/employees", "GET", function ($db) {
-	// Check Credentials
+	if (!$_SESSION["username"]) {
+		header("Location: /");
+	}
+
 	require_once "views/employees.html";
 });
 
 $router->add("/employees/data", "GET", function ($db) {
-	// Check Credentials
+	if (!$_SESSION["username"]) {
+		header("Location: /");
+	}
+
 	$employees = $db->getAllEmployees();
+	if ($employees === null) {
+		return;
+	}
+	
 	$array = array();
 	foreach ($employees as $employee) {
 		$array[] = array("id" => $employee->getId(), "name" => $employee->getName(), "title" => $employee->getTitle(), "hired" => $employee->getHiredDate());
+	}
+	if (count($array) == 0) {
+		echo "empty";
+		return;
 	}
 
 	echo json_encode($array);
 });
 
 $router->add("/employees/add", "POST", function ($db) {
-	// Check Credentials
+	if (!$_SESSION["username"]) {
+		header("Location: /");
+	}
+
 	$_POST = json_decode(file_get_contents("php://input"), true);
 
 	$name = $_POST["name"];
@@ -53,20 +73,25 @@ $router->add("/employees/add", "POST", function ($db) {
 	$employee = new Employee(null, $name, $title, new DateTime($hiredDate));
 
 	$id = $db->addEmployee($employee);
-	if ($id) {
-		$data = array("id" => $id);
-		echo json_encode($data);
+	if (!$id) {
+		return;
 	}
+
+	$data = array("id" => $id);
+	echo json_encode($data);
 });
 
 $router->add("/employees/update", "POST", function ($db) {
-	// Check Credentials
+	if (!$_SESSION["username"]) {
+		header("Location: /");
+	}
+
 	$_POST = json_decode(file_get_contents("php://input"), true);
 
-	$id = $_POST["editId"];
-	$name = $_POST["editName"];
-	$title = $_POST["editTitle"];
-	$hiredDate = $_POST["editHired"];
+	$id = $_POST["id"];
+	$name = $_POST["name"];
+	$title = $_POST["title"];
+	$hiredDate = $_POST["hired"];
 	$employee = new Employee($id, $name, $title, new DateTime($hiredDate));
 
 	if ($db->updateEmployee($employee)) {
@@ -75,7 +100,10 @@ $router->add("/employees/update", "POST", function ($db) {
 });
 
 $router->add("/employees/delete", "POST", function ($db) {
-	// Check Credentials
+	if (!$_SESSION["username"]) {
+		header("Location: /");
+	}
+
 	$_POST = json_decode(file_get_contents("php://input"), true);
 
 	$id = $_POST["id"];

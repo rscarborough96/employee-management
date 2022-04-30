@@ -19,9 +19,13 @@ function submitLogin(e) {
 }
 
 function checkResponseOk(response) {
-	if (response == "true") {
-		window.location.replace("/employees");
+	if (response != "") {
+		if (response == "true") {
+			window.location.replace("/employees");
+		} else {
+			failedLogin();
+		}
 	} else {
-		failedLogin();
+		alert("Something went wrong");
 	}
 }

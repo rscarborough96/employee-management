@@ -26,24 +26,91 @@ interface Database {
 
 // Concrete Product
 class LocalMysqlConnection implements Database {
+	private $connection;
+
+	public function __construct() {
+		// Obviously these values would normally be hidden, but it would need to be done outside of the repository
+		$this->connection = new MySQLi("localhost","my_user","P4ssword!","employee_management");
+		if ($this->connection->connect_error) {
+			exit("Error: ".$this->connection->connect_error);
+		}
+	}
+
+	// This function will be called when the main script ends
+	public function __destruct() {
+		$this->connection->close();
+	}
+
 	public function getAllEmployees() {
-		$data[] = new Employee(1, "z", "temp", new DateTime("2022-04-27"));
-		$data[] = new Employee(2, "x", "temp", new DateTime("2022-04-27"));
-		$data[] = new Employee(3, "y", "temp", new DateTime("2022-04-27"));
+		$query = $this->connection->prepare("SELECT * FROM employees");
+		$query->execute();
+		if (!$query->execute()) {
+			return null;
+		}
+		$result = $query->get_result();
+
+		$data = array();
+		while($row = $result->fetch_assoc()){
+			$data[] = new Employee($row["id"], $row["name"], $row["job_title"], new DateTime($row["date_of_hire"]));
+		}
 
 		return $data;
 	}
+
 	public function addEmployee($employee) {
-		return 1;
+		$query = $this->connection->prepare("INSERT INTO employees VALUES(null, ?, ?, ?)");
+
+		$name = $employee->getName();
+		$title = $employee->getTitle();
+		$hiredDate = $employee->getHiredDate();
+		$query->bind_param("sss", $name, $title, $hiredDate);
+		if (!$query->execute()) {
+			return false;
+		}
+
+		$query = $this->connection->prepare("SELECT LAST_INSERT_ID();");
+		if (!$query->execute()) {
+			return false;
+		}
+
+		$result = $query->get_result();
+		return $result->fetch_row()[0];
 	}
+
 	public function updateEmployee($employee) {
-		return true;
+		$query = $this->connection->prepare("UPDATE employees SET name = ?, job_title = ?, date_of_hire = ? WHERE id = ?");
+
+		$id = $employee->getId();
+		$name = $employee->getName();
+		$title = $employee->getTitle();
+		$hiredDate = $employee->getHiredDate();
+		$query->bind_param("sssi", $name, $title, $hiredDate, $id);
+		
+		return $query->execute();
 	}
+
 	public function deleteEmployee($id) {
-		return true;
+		$query = $this->connection->prepare("DELETE FROM employees WHERE id = ?");
+		$query->bind_param("i", $id);
+		
+		return $query->execute();
 	}
+
 	public function checkUserCredentials($user) {
-		return true;
+		// In a real environment, there are MUCH more secure and sophisticated ways to do this
+		$query = $this->connection->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
+
+		$username = $user->getUsername();
+		$password = $user->getPassword();
+		$query->bind_param("ss", $username, $password);
+		
+		if (!$query->execute()) {
+			return false;
+		}
+
+		$result = $query->get_result();
+		$row = $result->fetch_assoc();
+		return new User($row["username"], $row["password"]);
 	}
 }
 

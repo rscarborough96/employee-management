@@ -23,7 +23,7 @@ function getEditData(el) {
 	document.getElementById("editName").value = name;
 	document.getElementById("editTitle").value = title;
 	document.getElementById("editHired").value = hired;
-	document.getElementById("editID").value = id;
+	document.getElementById("editId").value = id;
 }
 
 function submitDelete(el){
@@ -54,7 +54,7 @@ function checkDeleteOk(response) {
 function getModalData(method) {
 	var data = {};
 	if (method == "edit") {
-		var idInput = document.getElementById("editID");
+		var idInput = document.getElementById("editId");
 		data[idInput.name] = idInput.value;
 	}
 
@@ -79,7 +79,7 @@ function submitAddOrEdit(e, method){
 }
 
 function handleAdd(json) {
-	if (json != null) {
+	if (json != "") {
 		var responseData = JSON.parse(json);
 		var data = getModalData("add");
 		data["id"] = responseData["id"];
@@ -122,13 +122,18 @@ function createCardColumn(data) {
 	var column = document.createElement("div");
 	column.classList.add("col-xs-12", "col-md-4");
 
+	// Javascript has a crazy way of parsing date strings and 
+	// ends up returning a date string that is 1 day behind.
+	// E.g. "2022-04-29" becomes "2022-04-28"
+	// Below, split() is used to coerce the Date() parser into giving us what we expect
+
 	column.innerHTML = '<div class="card my-3 mx-3 shadow text-center">' +
         '	<h5 class="card-header bg-primary text-white text-center">' + data["name"] + '</h5>' +
         '	<div class="d-flex justify-content-end">' +
         '	        <button class="btn btn-outline-danger btn-close m-1" title="Delete Employee" onclick="submitDelete(this)"></button>' +
         '	</div>' +
         '	<p class="title">Title: <strong>' + data["title"] + '</strong></p>' +
-        '	<p class="date-hired">Date Hired: <strong>' + new Date(data["hired"]).toLocaleDateString("en-US") + '</strong></p>' +
+        '	<p class="date-hired">Date Hired: <strong>' + new Date(data["hired"].split("-")).toLocaleDateString("en-US") + '</strong></p>' +
         '	<input type="hidden" name="id" value="' + data["id"] + '">' +
         '	<input type="hidden" name="name" value="' + data["name"] + '">' +
         '	<input type="hidden" name="title" value="' + data["title"] + '">' +
@@ -145,7 +150,12 @@ function insertCardColumn(column) {
 }
 
 function handleGetEmployees(json) {
-	if (json != null){
+	if (json != ""){
+		if (json == "empty") {
+			myAlert = createAlert("No employees. Try clicking the '+' to add some.","warning");
+			document.getElementById("alertBox").appendChild(myAlert);
+			return;
+		}
 		var responseData = JSON.parse(json);
 
 		// Sort by name in REVERSE alphabetical order.
