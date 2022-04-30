@@ -1,7 +1,7 @@
 # employee-management
 A web app that allows users to create, read, update, and delete employees from a mysql database
 
-Satisfies these user stories:\
+Satisfies these user stories:
 1. As a user I can add an employee to the system.
 2. As a user I will be notified when the user has been successfully saved.
 3. As a user I can update an employee in the system.
@@ -9,7 +9,7 @@ Satisfies these user stories:\
 5. As a user I will remove an employee from the system.
 6. As a user I will be notified when an employee is removed from the system.
 
-These optional requirements are also satisfied:\
+These optional requirements are also satisfied:
 1. Perstancy across application restarts.
 	* This implementation uses a MySQL database.
 2. Written to be used on a mobile device.
