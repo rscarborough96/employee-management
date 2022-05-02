@@ -68,6 +68,15 @@ function getModalData(method) {
 	return data;
 }
 
+function clearAddModal() {
+	var nameInput = document.getElementById("addName");
+	var titleInput = document.getElementById("addTitle");
+	var hiredInput = document.getElementById("addHired");
+	nameInput.value = "";
+	titleInput.value = "";
+	hiredInput.value = "";
+}
+
 function submitAddOrEdit(e, method){
 	e.preventDefault();
 	var data = getModalData(method);
