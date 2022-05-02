@@ -92,7 +92,7 @@ function handleAdd(json) {
 	} else {
 		alert("Something went wrong");
 	}
-	Array.from(document.getElementsByClassName("close-modal")).forEach(element => element.click());
+	closeModals();
 }
 
 function handleEdit(response) {
@@ -103,7 +103,7 @@ function handleEdit(response) {
 
 		card.querySelector(".card-header").innerHTML = data["name"];
 		card.querySelector(".title").innerHTML = "Title: <strong>" + data["title"] + "</strong>";
-		card.querySelector(".date-hired").innerHTML = "Hired Date: <strong>" + data["hired"] + "</strong>";
+		card.querySelector(".date-hired").innerHTML = "Date Hired: <strong>" + formatDate(data["hired"]) + "</strong>";
 		findCardInput(employeeData, "name").value = data["name"];
 		findCardInput(employeeData, "title").value = data["title"];
 		findCardInput(employeeData, "hired").value = data["hired"];
@@ -115,17 +115,13 @@ function handleEdit(response) {
 	} else {
 		alert("Something went wrong");
 	}
-	Array.from(document.getElementsByClassName("close-modal")).forEach(element => element.click());
+	closeModals();
 }
 
 function createCardColumn(data) {
 	var column = document.createElement("div");
 	column.classList.add("col-xs-12", "col-md-4");
 
-	// Javascript has a crazy way of parsing date strings and 
-	// ends up returning a date string that is 1 day behind.
-	// E.g. "2022-04-29" becomes "2022-04-28"
-	// Below, split() is used to coerce the Date() parser into giving us what we expect
 
 	column.innerHTML = '<div class="card my-3 mx-3 shadow text-center">' +
         '	<h5 class="card-header bg-primary text-white text-center">' + data["name"] + '</h5>' +
@@ -133,7 +129,7 @@ function createCardColumn(data) {
         '	        <button class="btn btn-outline-danger btn-close m-1" title="Delete Employee" onclick="submitDelete(this)"></button>' +
         '	</div>' +
         '	<p class="title">Title: <strong>' + data["title"] + '</strong></p>' +
-        '	<p class="date-hired">Date Hired: <strong>' + new Date(data["hired"].split("-")).toLocaleDateString("en-US") + '</strong></p>' +
+        '	<p class="date-hired">Date Hired: <strong>' + formatDate(data["hired"]) + '</strong></p>' +
         '	<input type="hidden" name="id" value="' + data["id"] + '">' +
         '	<input type="hidden" name="name" value="' + data["name"] + '">' +
         '	<input type="hidden" name="title" value="' + data["title"] + '">' +
@@ -143,6 +139,19 @@ function createCardColumn(data) {
         '	</div>' +
 	'</div>';
 	return column;
+}
+
+function formatDate(date) {
+	// Javascript has a crazy way of parsing date strings and 
+	// ends up returning a date string that is 1 day behind.
+	// E.g. "2022-04-29" becomes "2022-04-28"
+	// Below, split() is used to coerce the Date() parser into giving us what we expect
+
+	return new Date(date.split("-")).toLocaleDateString("en-US")
+}
+
+function closeModals() {
+	Array.from(document.getElementsByClassName("close-modal")).forEach(element => element.click());
 }
 
 function insertCardColumn(column) {
