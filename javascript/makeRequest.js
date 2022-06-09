@@ -7,7 +7,7 @@ function makeRequest(url, method, responseHandler, data) {
 		return false;
 	}
 	httpRequest.onreadystatechange = function() {
-		//try {
+		try {
 			if (httpRequest.readyState === XMLHttpRequest.DONE) {
 				if (httpRequest.status === 200) {
 					responseHandler(httpRequest.responseText);
@@ -15,9 +15,9 @@ function makeRequest(url, method, responseHandler, data) {
 					alert('There was a problem with the request.');
 				}
 			}
-		//} catch(e) {
-		//	alert('Caught Exception: ' + e.description);
-		//}
+		} catch(e) {
+			alert('Caught Exception: ' + e.description);
+		}
 	}
 
 	switch(method) {
